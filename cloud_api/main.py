@@ -54,6 +54,10 @@ def preprocess_input(input_data):
     if scaler is None:
         raise ValueError("Scaler is not loaded.")
 
+    # Konversi Jangka Waktu: Tidak Diperlukan (Model dilatih dalam Tahun)
+    # User input "20" artinya 20 Tahun -> Sesuai Training Data (Range 2-20 Tahun)
+    pass
+
     df = pd.DataFrame([input_data])
     
     # 1. Encoding (Manual sesuai logic sebelumnya)
