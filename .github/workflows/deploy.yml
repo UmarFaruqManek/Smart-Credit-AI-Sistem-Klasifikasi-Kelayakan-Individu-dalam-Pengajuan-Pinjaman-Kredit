@@ -34,12 +34,16 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
-      # Build & Push Docker Image ke Google Container Registry (gcr.io) atau Artifact Registry
-      # Cara simpel: Gunakan gcloud build submit (Cloud Build)
+      # Configure Docker to use gcloud credentials
+      - name: Configure Docker
+        run: gcloud auth configure-docker gcr.io
+
+      # Build & Push Docker Image manual (lebih reliable permission-nya)
       - name: Build and Push Container
         run: |
           cd cloud_api
-          gcloud builds submit --tag gcr.io/$PROJECT_ID/$SERVICE_NAME
+          docker build -t gcr.io/$PROJECT_ID/$SERVICE_NAME .
+          docker push gcr.io/$PROJECT_ID/$SERVICE_NAME
 
       # Deploy ke Cloud Run
       - name: Deploy to Cloud Run
