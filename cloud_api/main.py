@@ -115,14 +115,14 @@ def make_prediction(model_name, data):
         if pinjaman == 0: pinjaman = 1
         ratio = total_aset / pinjaman
         
-        # Update Logic Sesuai User: 1 = Approved, 0 = Rejected
-        status = "Ditolak"  # Default
+        # Update Logic Sesuai CATATAN_MODEL.md: 0 = Approved, 1 = Rejected
+        status = "Ditolak" 
         
-        if prediction == 1:
+        if prediction == 0:
             status = "Disetujui"
         else:
             status = "Ditolak"
-            # Hybrid Rule: Jika Rejected (0) tapi Aset Besar -> Approve
+            # Hybrid Rule: Jika Rejected (1) tapi Aset Besar -> Approve
             if ratio >= 5.0:
                 status = "Disetujui Bersyarat"
                 
