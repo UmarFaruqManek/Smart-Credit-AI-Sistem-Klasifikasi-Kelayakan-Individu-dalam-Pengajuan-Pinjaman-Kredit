@@ -81,3 +81,36 @@ API Anda siap digunakan dengan 3 endpoint berikut:
   "aset_bank": 100000000
 }
 ```
+
+## 5. Alur Kerja CI/CD (Pipeline Flow)
+
+Berikut adalah diagram bagaimana kode Anda berjalan dari Laptop sampai ke Google Cloud Run secara otomatis:
+
+```mermaid
+graph TD
+    A[Laptop User] -->|1. Git Push| B(GitHub Repository);
+    B -->|Trigger| C{GitHub Actions};
+
+    subgraph "CI/CD Pipeline (Server GitHub)"
+    C -->|2. Checkout Code| D[Ambil Kode Terbaru];
+    D -->|3. Auth GCP| E[Login Service Account];
+    E -->|4. Docker Build| F[Buat Container Image];
+    F -->|5. Docker Push| G[Upload ke Google Registry];
+    end
+
+    subgraph "Google Cloud Platform"
+    G -->|Image Tersimpan| H(Google Container Registry);
+    H -->|6. Deploy| I[Cloud Run Service];
+    I -->|Public URL| J[API Siap Diakses];
+    end
+```
+
+**Penjelasan Tahapan:**
+
+1.  **Git Push**: Anda mengirim perubahan kode ke GitHub (`git push`).
+2.  **Trigger**: GitHub melihat ada perubahan di branch `main`, lalu membangunkan robot "Action".
+3.  **Auth (Otentikasi)**: Robot login ke Google Cloud menggunakan "Kunci Rahasia" (`GCP_SA_KEY`) yang Anda simpan di Settings.
+4.  **Build**: Robot membungkus aplikasi Flask Anda menjadi "paket" (Docker Container) yang berisi kode + semua library (pandas, xgboost, dll).
+5.  **Push Image**: Paket tersebut dikirim (upload) ke gudang penyimpanan Google (Container Registry).
+6.  **Deploy**: Robot memerintahkan Cloud Run: _"Ambil paket terbaru dari gudang, lalu jalankan!"_.
+7.  **Selesai**: Cloud Run memberikan URL baru dimana API Anda hidup.
