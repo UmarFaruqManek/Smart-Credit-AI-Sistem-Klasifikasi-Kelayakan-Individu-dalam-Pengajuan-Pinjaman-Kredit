@@ -35,15 +35,16 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
 
       # Configure Docker to use gcloud credentials
+      # Configure Docker to use gcloud credentials
       - name: Configure Docker
-        run: gcloud auth configure-docker gcr.io
+        run: gcloud auth configure-docker asia-southeast2-docker.pkg.dev
 
-      # Build & Push Docker Image manual (lebih reliable permission-nya)
+      # Build & Push Docker Image ke Artifact Registry (pkg.dev)
       - name: Build and Push Container
         run: |
           cd cloud_api
-          docker build -t gcr.io/$PROJECT_ID/$SERVICE_NAME .
-          docker push gcr.io/$PROJECT_ID/$SERVICE_NAME
+          docker build -t asia-southeast2-docker.pkg.dev/$PROJECT_ID/loan-prediction-repo/$SERVICE_NAME .
+          docker push asia-southeast2-docker.pkg.dev/$PROJECT_ID/loan-prediction-repo/$SERVICE_NAME
 
       # Deploy ke Cloud Run
       - name: Deploy to Cloud Run
@@ -51,7 +52,7 @@ jobs:
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: ${{ env.SERVICE_NAME }}
-          image: gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}
+          image: asia-southeast2-docker.pkg.dev/${{ env.PROJECT_ID }}/loan-prediction-repo/${{ env.SERVICE_NAME }}
           region: ${{ env.REGION }}
           flags: "--allow-unauthenticated" # Agar API bisa diakses publik (tanpa token IAM)
 
