@@ -64,13 +64,43 @@ def predict():
         data = request.get_json()
         processed_data = preprocess_input(data)
         
+        # 1. Prediksi AI (Model)
         prediction = model.predict(processed_data)[0]
         probability = model.predict_proba(processed_data)[0]
+        confidence_val = probability[prediction]
         
+        # 2. Business Logic (Hybrid Check)
+        # Hitung Total Aset & Rasio
+        total_aset = (data.get('aset_rumah', 0) + 
+                      data.get('aset_usaha', 0) + 
+                      data.get('aset_mewah', 0) + 
+                      data.get('aset_bank', 0))
+        
+        pinjaman = data.get('jumlah_pinjaman', 1)  # Hindari bagi nol
+        ratio = total_aset / pinjaman
+        
+        status = "Ditolak"
+        final_prediction = prediction
+        logic_note = "Keputusan Murni Model AI"
+
+        if prediction == 0:
+            status = "Disetujui"
+        else:
+            # Jika REJECTED by Model, Cek Rasio Aset
+            # Rule: Jika Aset 5x lipat lebih besar dari pinjaman -> Approve Manual
+            if ratio >= 5.0:
+                status = "Disetujui Bersyarat"
+                logic_note = f"Keputusan Diubah oleh Aturan Aset (Aset {ratio:.1f}x Pinjaman)"
+                final_prediction = 0
+            else:
+                status = "Ditolak"
+
         return jsonify({
-            "model": "Logistic Regression",
-            "prediction": "Approved" if prediction == 0 else "Rejected",
-            "confidence": f"{probability[prediction]:.2%}"
+            "model": "Logistic Regression (Hybrid)",
+            "prediksi": status,
+            "probabilitas_ai": f"{confidence_val:.2%}",
+            "catatan": logic_note,
+            "rasio_aset_pinjaman": f"{ratio:.2f}x"
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500

@@ -79,28 +79,28 @@ def predict():
         pinjaman = data.get('jumlah_pinjaman', 1)  # Hindari bagi nol
         ratio = total_aset / pinjaman
         
-        status = "Rejected"
+        status = "Ditolak"
         final_prediction = prediction
-        logic_note = "Decision by AI Model"
+        logic_note = "Keputusan Murni Model AI"
 
         if prediction == 0:
-            status = "Approved"
+            status = "Disetujui"
         else:
             # Jika REJECTED by Model, Cek Rasio Aset
             # Rule: Jika Aset 5x lipat lebih besar dari pinjaman -> Approve Manual
             if ratio >= 5.0:
-                status = "Conditional Approved"
-                logic_note = f"Override by Asset Rule (Asset {ratio:.1f}x Loan)"
+                status = "Disetujui Bersyarat"
+                logic_note = f"Keputusan Diubah oleh Aturan Aset (Aset {ratio:.1f}x Pinjaman)"
                 final_prediction = 0  # Force Approve (tapi kita kasih label khusus)
             else:
-                status = "Rejected"
+                status = "Ditolak"
 
         return jsonify({
             "model": "Random Forest (Hybrid)",
-            "prediction": status,
-            "ai_confidence": f"{confidence_val:.2%}",
-            "notes": logic_note,
-            "asset_to_loan_ratio": f"{ratio:.2f}x"
+            "prediksi": status,
+            "probabilitas_ai": f"{confidence_val:.2%}",
+            "catatan": logic_note,
+            "rasio_aset_pinjaman": f"{ratio:.2f}x"
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
