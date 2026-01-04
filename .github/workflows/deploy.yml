@@ -1,0 +1,54 @@
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - "cloud_api/**"
+      - ".github/workflows/deploy.yml"
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  SERVICE_NAME: loan-prediction-api
+  REGION: asia-southeast2 # Jakarta (ubah jika perlu ke us-central1 dll)
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: "read"
+      id-token: "write"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Login ke Google Cloud menggunakan Service Account Key JSON
+      - name: Internet Auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      # Build & Push Docker Image ke Google Container Registry (gcr.io) atau Artifact Registry
+      # Cara simpel: Gunakan gcloud build submit (Cloud Build)
+      - name: Build and Push Container
+        run: |
+          cd cloud_api
+          gcloud builds submit --tag gcr.io/$PROJECT_ID/$SERVICE_NAME
+
+      # Deploy ke Cloud Run
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.SERVICE_NAME }}
+          image: gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}
+          region: ${{ env.REGION }}
+          flags: "--allow-unauthenticated" # Agar API bisa diakses publik (tanpa token IAM)
+
+      - name: Show Output
+        run: echo ${{ steps.deploy.outputs.url }}
