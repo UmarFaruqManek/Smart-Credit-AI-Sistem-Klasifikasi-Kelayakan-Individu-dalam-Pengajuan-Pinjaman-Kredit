@@ -94,7 +94,7 @@ Berikut adalah susunan folder proyek ini beserta penjelasannya:
 
 ## 👥 Tim Pengembang
 
-Proyek ini dikerjakan oleh **Team ID: C24-XXX** (Smart Credit AI) dari program Dicoding Data Science:
+Proyek ini dikerjakan oleh **Team ID: C24-G002** (Smart Credit AI) dari program Dicoding Data Science:
 
 | ID            | Nama Anggota               | Role         |
 | :------------ | :------------------------- | :----------- |
