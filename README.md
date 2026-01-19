@@ -134,13 +134,13 @@ Sebelum masuk ke tahap modeling, data mentah diproses terlebih dahulu:
 
 Kami bereksperimen dengan tiga algoritma berbeda untuk mencari performa terbaik:
 
-| Model                   | Akurasi     | Keterangan                                                                     |
-| :---------------------- | :---------- | :----------------------------------------------------------------------------- |
-| **Logistic Regression** | ~92.27%     | Baseline model, baik namun kurang menangkap pola kompleks.                     |
-| **XGBoost Classifier**  | ~97.89%     | Performa sangat tinggi dengan boosting.                                        |
-| **Random Forest**       | **~98.36%** | **Model Terbaik (Champion)**. Dipilih karena akurasi dan stabilitas tertinggi. |
+| Model                   | Akurasi     | Keterangan                                                                                            |
+| :---------------------- | :---------- | :---------------------------------------------------------------------------------------------------- |
+| **Logistic Regression** | ~92.27%     | Baseline model, baik namun kurang menangkap pola kompleks.                                            |
+| **Random Forest**       | ~98.36%     | Akurasi sangat tinggi dan stabil.                                                                     |
+| **XGBoost Classifier**  | **~97.89%** | **Model Terbaik (Champion)**. Dipilih karena performa handling outlier yang lebih baik dan efisiensi. |
 
-Model **Random Forest** akhirnya dipilih dan disimpan (`random_forest_model.pkl`) untuk digunakan di sistem produksi.
+Model **XGBoost** dipilih sebagai model utama untuk deployment, namun kami tetap menyediakan ketiga model tersebut dalam sistem API.
 
 ---
 
@@ -197,7 +197,7 @@ API akan mengembalikan keputusan apakah pinjaman disetujui atau ditolak, beserta
 
 ```json
 {
-  "model": "random-forest",
+  "model": "xgboost",
   "status": "Disetujui",
   "prediction_label": 0,
   "confidence": "98.50%",
@@ -228,22 +228,33 @@ Jika Anda ingin menjalankan proyek ini di komputer Anda sendiri secara lokal (Lo
     ```
 
 3.  **Jalankan Aplikasi API**
-    Kita akan menjalankan model terbaik (**Random Forest**) sebagai server lokal:
 
-    ```bash
-    python api_loan_prediction/api_random_forest.py
-    ```
+    Kami menyediakan 3 endpoint berbeda untuk setiap model. Silakan jalankan salah satu (atau ketiganya menggunakan terminal terpisah):
 
-    _Server akan berjalan di `http://localhost:5000` (atau port yang tertera di terminal)._
+    - **Logistic Regression** (Port 5001)
+      ```bash
+      python api_loan_prediction/api_logistic.py
+      ```
+    - **Random Forest** (Port 5002)
+      ```bash
+      python api_loan_prediction/api_random_forest.py
+      ```
+    - **XGBoost** (Port 5003 - _Recommended_)
+      ```bash
+      python api_loan_prediction/api_xgboost.py
+      ```
 
 4.  **Testing dengan Postman**
     Karena ini adalah layanan API (Backend), kita memerlukan tools seperti **Postman** untuk melakukan pengujian request.
 
     - Buka Postman.
     - Buat Request baru dengan method **POST**.
-    - Masukkan URL: `http://localhost:5000/predict` (sesuaikan port jika berbeda).
+    - Masukkan URL sesuai model yang dijalankan:
+      - Logistic: `http://localhost:5001/predict`
+      - Random Forest: `http://localhost:5002/predict`
+      - XGBoost: `http://localhost:5003/predict`
     - Pilih tab **Body** -> **raw** -> **JSON**.
-    - Masukkan contoh JSON data nasabah (seperti di bagian Dokumentasi API di atas).
+    - Masukkan contoh JSON data nasabah.
     - Klik **Send** dan lihat hasil prediksinya!
 
 ---
