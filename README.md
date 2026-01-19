@@ -6,7 +6,7 @@
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 ![Google Cloud](https://img.shields.io/badge/GoogleCloud-%234285F4.svg?style=for-the-badge&logo=google-cloud&logoColor=white)
 
-> **Proyek Capstone** untuk membangun sistem cerdas yang dapat memprediksi kelayakan pengajuan pinjaman kredit nasabah berdasarkan data profil finansial mereka.
+> **Proyek Capstone** untuk syarat kelulusan program **Dicoding Data Science**. Membangun sistem cerdas yang dapat memprediksi kelayakan pengajuan pinjaman kredit nasabah berdasarkan data profil finansial mereka.
 
 ---
 
@@ -14,12 +14,14 @@
 
 1. [Tentang Proyek](#-tentang-proyek)
 2. [Alur Kerja (Pipeline)](#-alur-kerja)
-3. [Exploratory Data Analysis (EDA)](#-1-exploratory-data-analysis-eda)
-4. [Data Preprocessing](#-2-data-preprocessing)
-5. [Pengembangan Model](#-3-pengembangan-model)
-6. [Deployment & Cloud](#-4-deployment--cloud)
-7. [Dokumentasi API](#-5-dokumentasi-api)
-8. [Cara Menjalankan Lokal](#-6-cara-menjalankan-lokal)
+3. [Dataset & Struktur Folder](#-dataset--struktur-folder)
+4. [Tim Pengembang](#-tim-pengembang)
+5. [Exploratory Data Analysis (EDA)](#-1-exploratory-data-analysis-eda)
+6. [Data Preprocessing](#-2-data-preprocessing)
+7. [Pengembangan Model](#-3-pengembangan-model)
+8. [Deployment & Cloud](#-4-deployment--cloud)
+9. [Dokumentasi API](#-5-dokumentasi-api)
+10. [Cara Menjalankan Lokal](#-6-cara-menjalankan-lokal)
 
 ---
 
@@ -55,6 +57,51 @@ graph LR
 3.  **Preprocessing**: Membersihkan dan transformasi data agar siap untuk mesin.
 4.  **Modeling**: Melatih algoritma Logistic Regression, Random Forest, dan XGBoost.
 5.  **Deployment**: Mengemas model menjadi API menggunakan Flask dan deploy ke Google Cloud Run.
+
+---
+
+## 📂 Dataset & Struktur Folder
+
+### Sumber Data
+
+Dataset yang digunakan dalam proyek ini bersumber dari Kaggle:
+🔗 [Loan Approval Prediction Dataset](https://www.kaggle.com/datasets/architsharma01/loan-approval-prediction-dataset/data)
+
+### Struktur Direktori
+
+Berikut adalah susunan folder proyek ini beserta penjelasannya:
+
+```text
+├── cloud_api/               # Source code utama API (Flask) untuk deployment
+│   ├── main.py              # File utama aplikasi Flask
+│   ├── Dockerfile           # Konfigurasi container Docker
+│   └── requirements.txt     # Daftar library python yang dibutuhkan
+├── EDA/                     # Notebook Exploratory Data Analysis
+│   └── EDA Procces.ipynb    # Proses analisis awal data
+├── Preprocessing/           # Tahapan pembersihan data
+│   ├── Preprocessing.ipynb  # Notebook cleaning, encoding, scaling
+│   └── scaler.pkl           # File scaler tersimpan (Joblib)
+├── model/                   # Eksperimen pelatihan model (Jupyter Notebooks)
+│   └── model.ipynb          # Training Logistic Reg, RF, XGBoost
+├── model_jadi/              # File binary model yang sudah dilatih (.pkl)
+│   ├── logistic_regression_model.pkl
+│   ├── random_forest_model.pkl
+│   └── xgboost_model.pkl
+└── README.md                # Dokumentasi proyek ini
+```
+
+---
+
+## 👥 Tim Pengembang
+
+Proyek ini dikerjakan oleh **Team ID: C24-XXX** (Smart Credit AI) dari program Dicoding Data Science:
+
+| ID            | Nama Anggota               | Role         |
+| :------------ | :------------------------- | :----------- |
+| **B25B9D009** | Handika                    | Data Science |
+| **B25B9D008** | Reza Gunawan Ridlo Setiadi | Data Science |
+| **B25B9D007** | Abdillah Husein Sanjani    | Data Science |
+| **B25B9D003** | Umar Faruq Manek           | Data Science |
 
 ---
 
@@ -164,7 +211,7 @@ API akan mengembalikan keputusan apakah pinjaman disetujui atau ditolak, beserta
 
 ## 💻 6. Cara Menjalankan Lokal
 
-Jika Anda ingin menjalankan proyek ini di komputer Anda sendiri:
+Jika Anda ingin menjalankan proyek ini di komputer Anda sendiri secara lokal (Localhost):
 
 1.  **Clone Repository**
 
@@ -174,20 +221,30 @@ Jika Anda ingin menjalankan proyek ini di komputer Anda sendiri:
     ```
 
 2.  **Install Dependencies**
-    Pastikan Python sudah terinstall, lalu jalankan:
+    Pastikan Python sudah terinstall, lalu jalankan instalasi library dari folder `api_loan_prediction`:
 
     ```bash
-    pip install -r cloud_api/requirements.txt
+    pip install -r api_loan_prediction/requirements.txt
     ```
 
-3.  **Jalankan Aplikasi**
+3.  **Jalankan Aplikasi API**
+    Kita akan menjalankan model terbaik (**Random Forest**) sebagai server lokal:
 
     ```bash
-    python cloud_api/main.py
+    python api_loan_prediction/api_random_forest.py
     ```
 
-4.  **Akses API**
-    Server akan berjalan di `http://localhost:8080`.
+    _Server akan berjalan di `http://localhost:5000` (atau port yang tertera di terminal)._
+
+4.  **Testing dengan Postman**
+    Karena ini adalah layanan API (Backend), kita memerlukan tools seperti **Postman** untuk melakukan pengujian request.
+
+    - Buka Postman.
+    - Buat Request baru dengan method **POST**.
+    - Masukkan URL: `http://localhost:5000/predict` (sesuaikan port jika berbeda).
+    - Pilih tab **Body** -> **raw** -> **JSON**.
+    - Masukkan contoh JSON data nasabah (seperti di bagian Dokumentasi API di atas).
+    - Klik **Send** dan lihat hasil prediksinya!
 
 ---
 
