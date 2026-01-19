@@ -259,4 +259,4 @@ Jika Anda ingin menjalankan proyek ini di komputer Anda sendiri secara lokal (Lo
 
 ---
 
-_Dibuat dengan ❤️ oleh Tim Capstone Smart Credit AI_
+_Dibuat oleh Tim Capstone Team ID: C24-G002_
